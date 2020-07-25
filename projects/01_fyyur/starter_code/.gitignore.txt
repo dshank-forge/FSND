@@ -1,0 +1,3 @@
+# We want to ignore the env directory. This directory is for the local virtual 
+# environment that we use to run our version of the project. 
+env
