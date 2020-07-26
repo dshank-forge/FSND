@@ -142,4 +142,4 @@ To start and run the local development server,
 
 4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
 
-Bookmark - Just finished setting up local development environment. Time to start engineering! 
+Bookmark - Trying to connect the app to my local database.
