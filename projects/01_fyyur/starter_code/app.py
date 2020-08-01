@@ -8,11 +8,12 @@ import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
-# import psycopg2
+
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -21,23 +22,23 @@ app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
 db = SQLAlchemy(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://david@localhost:5432/fyyur1'
-# migrate = Migrate(app, db)
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://david@localhost:5432/fyyur1'
+migrate = Migrate(app, db)
 
 # TODO: connect to a local postgresql database
 
 #Let us test if we have connected to the database or not
 
-class ex_table2(db.Model):
-    __tablename__ = 'ex_table2'
+# class ex_table2(db.Model):
+#     __tablename__ = 'ex_table2'
 
-    id = db.Column(db.Integer, primary_key=True)
-    cat_type = db.Column(db.String)
+#     id = db.Column(db.Integer, primary_key=True)
+#     cat_type = db.Column(db.String)
 
-myCat = ex_table2(cat_type='Brown')
+# myCat = ex_table2(cat_type='Brown')
 
-db.session.add(myCat)
-db.commit
+# db.session.add(myCat)
+# db.commit 
 
 #----------------------------------------------------------------------------#
 # Models.
@@ -529,6 +530,7 @@ if not app.debug:
 # Default port:
 if __name__ == '__main__':
     app.run()
+    #migrate.migrate()
 
 # Or specify port manually:
 '''
