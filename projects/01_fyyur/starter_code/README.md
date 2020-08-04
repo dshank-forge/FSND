@@ -142,5 +142,5 @@ To start and run the local development server,
 
 4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
 
-Bookmark - Trying to connect the app to my local database. It might be connected. I am trying to run a flask migration to test the connection.
-When I run the migration, I get an error saying that I need psycopg2 installed. I get an error when I try to install psycopg2. 
+Bookmark - Trying to connect the app to my local database. I think the flask migration is not working because something is messed up 
+in my db connection config. I successfully installed psycopg2-binary.
