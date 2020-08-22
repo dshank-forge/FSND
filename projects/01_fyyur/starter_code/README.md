@@ -142,5 +142,4 @@ To start and run the local development server,
 
 4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
 
-Bookmark - I connected the app to my local PostGres database! Trying to get the relationships between Venue, Show, and Artist down.
-Upgrading my data model using flask migrate. 
+Bookmark - Models should be done. Working on form for creating a new venue.

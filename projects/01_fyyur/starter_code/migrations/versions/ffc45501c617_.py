@@ -25,10 +25,29 @@ def upgrade():
     sa.Column('datetime', sa.DateTime(), nullable=True),
     sa.Column('image_link', sa.String(length=500), nullable=True),
     sa.ForeignKeyConstraint(['artist'], ['Artist.id'], ),
-    sa.ForeignKeyConstraint(['image_link'], ['Artist.image_link'], ),
+    # sa.ForeignKeyConstraint(['image_link'], ['Artist.image_link'], ),
     sa.ForeignKeyConstraint(['venue'], ['Venue.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+
+    op.create_foreign_key(
+        'fk_show_venue_id',
+        'Show', 'Venue',
+        ['venue'], ['id']
+    )
+
+    op.create_foreign_key(
+        'fk_show_artist_id',
+        'Show', 'Artist',
+        ['artist'], ['id']
+    )
+
+    # op.create_foreign_key(
+    #     'fk_show_artist_image',
+    #     'Show', 'Artist',
+    #     ['image_link'], ['image_link']
+    # )
+
     op.add_column('Venue', sa.Column('genres', sa.String(length=120), nullable=True))
     # ### end Alembic commands ###
 
