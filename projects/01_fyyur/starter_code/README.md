@@ -142,4 +142,4 @@ To start and run the local development server,
 
 4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
 
-Bookmark - Models should be done. Working on form for creating a new venue.
+Bookmark - Trying to connect the create venue controller to the new venue view.
