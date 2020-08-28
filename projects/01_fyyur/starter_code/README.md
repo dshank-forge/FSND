@@ -142,4 +142,5 @@ To start and run the local development server,
 
 4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
 
-Bookmark - Trying to connect the create venue controller to the new venue view.
+Bookmark - Trying to connect the create venue controller to the new venue view. 
+request.form.get() uses the key-value pairs from the form.
