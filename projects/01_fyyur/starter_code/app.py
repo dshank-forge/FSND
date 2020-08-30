@@ -130,8 +130,8 @@ def venues():
     }]
   }]
 
-  # all_venues = Venue.query.first() #.add_columns('city')
-  # print(all_venues)
+  all_venues = Venue.query.Column('city')
+  print(all_venues)
 
   return render_template('pages/venues.html', areas=data);
 
