@@ -130,10 +130,10 @@ def venues():
     }]
   }]
 
-  all_venues = Venue.query.Column('city')
+  all_venues = Venue.query.group_by(Venue.id, Venue.state, Venue.city)
   print(all_venues)
 
-  return render_template('pages/venues.html', areas=data);
+  return render_template('pages/venues.html', areas=all_venues);
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
