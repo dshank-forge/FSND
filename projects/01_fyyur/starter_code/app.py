@@ -130,8 +130,35 @@ def venues():
     }]
   }]
 
-  all_venues = Venue.query.group_by(Venue.id, Venue.state, Venue.city)
+  all_venues = Venue.query.group_by(Venue.id, Venue.state, Venue.city).all()
+  # all_venues.append({"city" : 'dog', "state" : 'cat'})
+  # all_venues = Venue.query.group_by(Venue.id, Venue.state, Venue.city)
+
+  pairs = []
+  
+  #Get all state/city pairs
+  for v in all_venues:
+      state = v.state
+      city = v.city 
+      pair = [state, city] 
+      pairs.append(pair)   
+      #this method allows duplicates. Need a way to remove duplicates
+
+  david_areas = {}
+
+  #For each pair, associate proper records(venues)
+  for pair in pairs:
+      key = '-'.join(pair)
+      david_areas[key] = []
+      records = Venue.query.filter_by(state=pair[0], city=pair[1])
+      for record in records:
+          david_areas[key].append(record) 
+
   print(all_venues)
+  print(pairs)
+  print(david_areas)
+  # for venue in all_venues.venues:
+  #     print(venue)
 
   return render_template('pages/venues.html', areas=all_venues);
 
