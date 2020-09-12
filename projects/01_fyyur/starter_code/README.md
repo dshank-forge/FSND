@@ -142,4 +142,4 @@ To start and run the local development server,
 
 4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
 
-Bookmark - Working on the /venues endpoint. Trying to get all the unique state/city combo.s from the database. Not sure how to use the Model.query() syntax for this purpose. Might have to try a different approach.
+Bookmark - About to start working on the /venues/venue_id endpoint (or whatever else I feel like).

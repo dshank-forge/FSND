@@ -22,11 +22,7 @@ app = Flask(__name__)
 moment = Moment(app)
 app.config.from_object('config')
 db = SQLAlchemy(app)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://david@localhost:5432/fyyur1'
 migrate = Migrate(app, db)
-
-# TODO: connect to a local postgresql database
-# Done!
 
 #----------------------------------------------------------------------------#
 # Models.
@@ -46,9 +42,6 @@ class Venue(db.Model):
     image_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
 
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
-    # Done!
-
 class Artist(db.Model):
     __tablename__ = 'Artist'
 
@@ -61,12 +54,6 @@ class Artist(db.Model):
     genres = db.Column(db.String(120))
     image_link = db.Column(db.String(500), unique=True) 
     facebook_link = db.Column(db.String(120))
-
-    # TODO: implement any missing fields, as a database migration using Flask-Migrate
-    # Done!
-
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
-# Done!
 
 class Show(db.Model):
     __tablename__ = 'Show'
@@ -106,67 +93,37 @@ def index():
 
 @app.route('/venues')
 def venues():
-  # TODO: replace with real venues data.
-  #       num_shows should be aggregated based on number of upcoming shows per venue.
-  data=[{
-    "city": "San Francisco",
-    "state": "CA",
-    "venues": [{
-      "id": 1,
-      "name": "The Musical Hop",
-      "num_upcoming_shows": 0,
-    }, {
-      "id": 3,
-      "name": "Park Square Live Music & Coffee",
-      "num_upcoming_shows": 1,
-    }]
-  }, {
-    "city": "New York",
-    "state": "NY",
-    "venues": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }]
+  # TODO: num_shows should be aggregated based on number of upcoming shows per venue.
 
   all_venues = Venue.query.group_by(Venue.id, Venue.state, Venue.city).all()
-  # all_venues.append({"city" : 'dog', "state" : 'cat'})
-  # all_venues = Venue.query.group_by(Venue.id, Venue.state, Venue.city)
-
-  pairs = []
+  pairs = set()
   
-  #Get all state/city pairs
+  #Get each unique city/state pair
   for v in all_venues:
       state = v.state
       city = v.city 
-      pair = [state, city] 
-      pairs.append(pair)   
-      #this method allows duplicates. Need a way to remove duplicates
+      pair = (state, city) 
+      pairs.add(pair)   
 
-  david_areas = {}
+  db_areas = []
 
   #For each pair, associate proper records(venues)
+  index = 0
   for pair in pairs:
-      key = '-'.join(pair)
-      david_areas[key] = []
+      db_areas.append({
+        "city": pair[1],
+        "state": pair[0],
+        "venues": []  
+      })
       records = Venue.query.filter_by(state=pair[0], city=pair[1])
       for record in records:
-          david_areas[key].append(record) 
+          db_areas[index]["venues"].append(record) 
+      index += 1
 
-  print(all_venues)
-  print(pairs)
-  print(david_areas)
-  # for venue in all_venues.venues:
-  #     print(venue)
-
-  return render_template('pages/venues.html', areas=all_venues);
+  return render_template('pages/venues.html', areas=db_areas)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
-  # seach for Hop should return "The Musical Hop".
-  # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
   response={
     "count": 1,
     "data": [{
@@ -175,7 +132,17 @@ def search_venues():
       "num_upcoming_shows": 0,
     }]
   }
-  return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
+  
+  my_search_term = request.form.get('search_term', '')
+  my_venues = Venue.query.filter(Venue.name.ilike('%' + my_search_term + '%')).all()
+  venue_count = Venue.query.filter(Venue.name.ilike('%' + my_search_term + '%')).count()
+
+  my_response = {
+    "count": venue_count,
+    "data": my_venues
+  }
+
+  return render_template('pages/search_venues.html', results=my_response, search_term=my_search_term)
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
