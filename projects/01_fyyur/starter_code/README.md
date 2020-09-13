@@ -142,4 +142,5 @@ To start and run the local development server,
 
 4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
 
-Bookmark - About to start working on the /venues/venue_id endpoint (or whatever else I feel like).
+Bookmark - Finished several more endpoints last time! Currently working on the update artist controller/endpoint.
+Looking into the WTForms documentation. 
