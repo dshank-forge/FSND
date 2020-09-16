@@ -142,4 +142,4 @@ To start and run the local development server,
 
 4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
 
-Bookmark - Finished the GET method for the artist/id/edit endpoint. Now starting on the POST method for that endpoint.
+Bookmark - Working on the /shows endpoint.
