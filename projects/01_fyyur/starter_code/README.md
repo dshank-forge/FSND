@@ -142,5 +142,4 @@ To start and run the local development server,
 
 4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
 
-Bookmark - Finished several more endpoints last time! Currently working on the update artist controller/endpoint.
-Looking into the WTForms documentation. 
+Bookmark - Finished the GET method for the artist/id/edit endpoint. Now starting on the POST method for that endpoint.
