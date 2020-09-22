@@ -142,4 +142,4 @@ To start and run the local development server,
 
 4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
 
-Bookmark - Working on the DELETE method for venues. Remove personal data from db before submitting. 
+Bookmark - Still working on the DELETE method for venues. Remove personal data from db before submitting. 
