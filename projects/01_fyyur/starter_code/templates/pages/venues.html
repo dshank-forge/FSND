@@ -34,8 +34,10 @@
 		btn.onclick = function (e) {
 			const venueID = e.target.dataset['id'];
 			fetch('/venues/' + venueID, {
-				method: 'DELETE'
+				method: 'DELETE',
 			})
+				.then(fetch('/'))
+			// window.location.href = ""
 		}
 	}
 </script>

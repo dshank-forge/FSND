@@ -192,15 +192,17 @@ def delete_venue(venue_id):
   print(venue)
   try:
     print('delete this venue')
-    Venue.query.filter_by(id=venue_id).delete()
-    db.session.commit()
+    # Venue.query.filter_by(id=venue_id).delete()
+    # db.session.commit()
     print('venue deleted.')
   except:
     print('exception!')
     db.session.rollback()
   finally:
     db.session.close()
+    print('finally')
 
+  print('outside the TRY block')
   return render_template('pages/home.html')
   
   # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
