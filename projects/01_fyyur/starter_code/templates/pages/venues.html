@@ -28,6 +28,7 @@
 </ul>
 {% endfor %}
 <script>
+	console.log('Script starting...')
 	const deleteBtns = document.querySelectorAll('.delete-button');
 	for (let i = 0; i < deleteBtns.length; i++) {
 		const btn = deleteBtns[i];
@@ -36,7 +37,10 @@
 			fetch('/venues/' + venueID, {
 				method: 'DELETE',
 			})
-				.then(fetch('/'))
+				.then(console.log('\nDELETE endpoint fetched\n'))
+				// .then(fetch('/', { method: 'GET', }))
+				.then(window.location.replace('/'))
+				.then(console.log('\nAttempted to return to homepage.\n'))
 			// window.location.href = ""
 		}
 	}
