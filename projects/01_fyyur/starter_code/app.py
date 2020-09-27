@@ -192,8 +192,8 @@ def delete_venue(venue_id):
   print(venue)
   try:
     print('delete this venue')
-    # Venue.query.filter_by(id=venue_id).delete()
-    # db.session.commit()
+    Venue.query.filter_by(id=venue_id).delete()
+    db.session.commit()
     print('venue deleted.')
   except:
     print('exception!')
