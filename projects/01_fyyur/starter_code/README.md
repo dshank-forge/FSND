@@ -142,4 +142,4 @@ To start and run the local development server,
 
 4. Navigate to Home page [http://localhost:5000](http://localhost:5000)
 
-Bookmark - Add pictures and submit.
+Bookmark - Add pictures, review the README a final time, and submit.
