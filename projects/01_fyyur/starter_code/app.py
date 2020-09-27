@@ -13,6 +13,7 @@ import logging
 from logging import Formatter, FileHandler
 from flask_wtf import Form #,FlaskForm -- the Form module may be replaced by FlaskForm at some point.
 from forms import *
+from datetime import datetime
 
 #----------------------------------------------------------------------------#
 # App Config.
@@ -93,8 +94,6 @@ def index():
 
 @app.route('/venues')
 def venues():
-  # TODO: num_shows should be aggregated based on number of upcoming shows per venue.
-
   all_venues = Venue.query.group_by(Venue.id, Venue.state, Venue.city).all()
   pairs = set()
   
@@ -137,10 +136,42 @@ def search_venues():
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
-  #TODO(?): Upcoming Shows and Past Shows.
-  my_venue = Venue.query.get(venue_id)
+  class udacity_show(object):
+      def __init__(self, show_record):
+        self.show_record = show_record
+        self.artist_image_link = show_record.image_link
+        self.artist_id = show_record.artist
+        self.start_time = (show_record.datetime).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+        self.artist_name = (Artist.query.get(self.artist_id)).name
 
-  return render_template('pages/show_venue.html', venue=my_venue)
+  class udacity_venue(object):
+      def __init__(self, venue_record):
+        self.venue_record = venue_record
+        self.name = venue_record.name
+        self.id = venue_record.id
+        self.genres = venue_record.genres
+        self.city = venue_record.city
+        self.state = venue_record.state
+        self.phone = venue_record.phone
+        self.website = venue_record.facebook_link
+        self.facebook_link = venue_record.facebook_link
+        self.seeking_talent = True
+        self.all_shows = Show.query.filter_by(venue=venue_record.id).all()
+        self.upcoming_shows = []
+        self.past_shows = []
+        current_datetime = datetime.now()
+        for sh in self.all_shows:
+          if sh.datetime > current_datetime:
+            self.upcoming_shows.append(udacity_show(sh))
+          else:
+            self.past_shows.append(udacity_show(sh))
+        self.upcoming_shows_count = len(self.upcoming_shows)
+        self.past_shows_count = len(self.past_shows)
+
+  my_venue = Venue.query.get(venue_id)
+  the_venue = udacity_venue(my_venue)
+
+  return render_template('pages/show_venue.html', venue=the_venue)
 
 #  Create Venue
 #  ----------------------------------------------------------------
@@ -150,7 +181,6 @@ def create_venue_form():
   form = VenueForm()
   print('/venues/create, methods = [\'GET\'] ')
   return render_template('forms/new_venue.html', form=form)
-
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
@@ -182,34 +212,17 @@ def create_venue_submission():
   finally:
       return render_template('pages/home.html')
 
-
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
-  # TODO: Complete this endpoint for taking a venue_id, and using
-  # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
-  print('\n---\nIn the delete_venue controller\n---\n')
-  venue = Venue.query.get(venue_id)
-  print(venue)
   try:
-    print('delete this venue')
     Venue.query.filter_by(id=venue_id).delete()
     db.session.commit()
-    print('venue deleted.')
   except:
-    print('exception!')
     db.session.rollback()
   finally:
     db.session.close()
-    print('finally')
 
-  print('outside the TRY block')
   return render_template('pages/home.html')
-  
-  # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
-  # clicking that button delete it from the db then redirect the user to the homepage
-  
-  # print('\n\nDelete Route\n\n')
-  
   
 
 #  Artists
@@ -237,10 +250,43 @@ def search_artists():
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
-  #TODO(?): Upcoming Shows and Past Shows.
-  my_artist = Artist.query.get(artist_id)
+  
+  class udacity_show(object):
+      def __init__(self, show_record):
+        self.show_record = show_record
+        self.venue_id = show_record.venue
+        self.start_time = (show_record.datetime).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+        self.venue_image_link = (Venue.query.get(self.venue_id)).image_link
+        self.venue_name = (Venue.query.get(self.venue_id)).name
 
-  return render_template('pages/show_artist.html', artist=my_artist)
+  class udacity_artist(object):
+      def __init__(self, artist_record):
+        self.artist_record = artist_record
+        self.name = artist_record.name
+        self.id = artist_record.id
+        self.genres = artist_record.genres
+        self.city = artist_record.city
+        self.state = artist_record.state
+        self.phone = artist_record.phone
+        self.website = artist_record.facebook_link
+        self.facebook_link = artist_record.facebook_link
+        self.seeking_venue = True
+        self.all_shows = Show.query.filter_by(artist=artist_record.id).all()
+        self.upcoming_shows = []
+        self.past_shows = []
+        current_datetime = datetime.now()
+        for sh in self.all_shows:
+          if sh.datetime > current_datetime:
+            self.upcoming_shows.append(udacity_show(sh))
+          else:
+            self.past_shows.append(udacity_show(sh))
+        self.upcoming_shows_count = len(self.upcoming_shows)
+        self.past_shows_count = len(self.past_shows)
+
+  my_artist = Artist.query.get(artist_id)
+  the_artist = udacity_artist(my_artist)
+
+  return render_template('pages/show_artist.html', artist=the_artist)
 
 #  Update
 #  ----------------------------------------------------------------
