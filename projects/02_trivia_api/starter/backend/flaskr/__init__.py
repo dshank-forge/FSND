@@ -16,20 +16,28 @@ def create_app(test_config=None):
   '''
   @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   '''
-  # response.allow_requests(*)
-  # response.allow_methods('PATCH','GET','POST','DELETE')
-
+  cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
   '''
   @TODO: Use the after_request decorator to set Access-Control-Allow
   '''
+  @app.after_request
+  def after_request(response):
+      response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
+      response.headers.add('Access-Control-Allow-Methods', 'GET,PATCH,POST,DELETE,OPTIONS')
+      return response
 
   '''
   @TODO: 
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
-
+  @app.route('/categories')
+  def get_categories():
+    categories = Category.query.all()
+    categories = [c.type for c in categories]
+    response = jsonify({'success' : True, 'categories' : categories})
+    return response 
 
   '''
   @TODO: 
@@ -44,6 +52,40 @@ def create_app(test_config=None):
   Clicking on the page numbers should update the questions. 
   '''
 
+  @app.route('/questions')
+  def get_all_questions():
+    questions = Question.query.all()
+    questions = [q.question for q in questions]
+    total_questions = len(questions)
+    categories = Category.query.all()
+    categories = [c.type for c in categories]
+    #how do I get current category?
+    #
+    page = request.args.get('page', 1, type=int)
+    start = (page - 1) * QUESTIONS_PER_PAGE
+    end = start + QUESTIONS_PER_PAGE
+    questions_on_page = questions[start:end] 
+
+    response = jsonify({
+      'success' : True,
+      'questions' : questions_on_page,
+      'total_questions' : total_questions,
+      'categories' : categories,
+      'current_category' : 1
+    })
+    
+    # test_result = {
+    #   'success' : True,
+    #   'questions' : ['q1', 'q2', 'q3'],
+    #   'total_questions': 3,
+    #   'categories' : ['c1', 'c2', 'c3'],
+    #   'current_category' : 'c1'
+    # }
+    # return jsonify(test_result)  
+
+    return response 
+
+
   '''
   @TODO: 
   Create an endpoint to DELETE question using a question ID. 
@@ -51,6 +93,10 @@ def create_app(test_config=None):
   TEST: When you click the trash icon next to a question, the question will be removed.
   This removal will persist in the database and when you refresh the page. 
   '''
+  @app.route('/questions/<int:question_id>')
+  def delete_question(question_id):
+    pass 
+    #
 
   '''
   @TODO: 
