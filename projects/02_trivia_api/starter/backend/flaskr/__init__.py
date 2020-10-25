@@ -116,21 +116,54 @@ def create_app(test_config=None):
   '''
   @app.route('/questions', methods=['POST'])
   def create_question():
-    q = request.args.get('question')
-    print(q)
+    question = request.args.get('question')
+    answer = request.args.get('answer')
+    difficulty = request.args.get('difficulty')
+    category = request.args.get('category')
+    search_term = request.args.get('searchTerm')
 
-    return jsonify({'success':True})
+    # Search for questions
+    if search_term:
+        query_results = Question.query.filter(Question.question.ilike('%' + search_term + '%')).all()
+        questions = [{'question': q.question, 'answer': q.answer, 'category': q.category, 'difficulty': q.difficulty} for q in query_results]
+        # query_results = Question.query.filter(Question.question.ilike('%o%')).all()
+        total_questions = len(query_results)
+        have_results = bool(total_questions)
+        
+        return jsonify({
+          'success' : True,
+          'have_results' : have_results,
+          'questions' : questions, #question data object is not JSON serializable 
+          'total_questions' : total_questions,
+          'current_category' : 1
+        })
 
-  '''
-  @TODO: 
-  Create a POST endpoint to get questions based on a search term. 
-  It should return any questions for whom the search term 
-  is a substring of the question. 
+    # Post a new question
+    else: 
+        if (question and answer and difficulty and category):
+            try:
+                new_question = Question(question=question, answer=answer, difficulty=difficulty, category=category)
+                new_question.insert()
+            except:
+                abort(422)
+        else:
+            abort(422)
 
-  TEST: Search by any phrase. The questions list will update to include 
-  only question that include that string within their question. 
-  Try using the word "title" to start. 
-  '''
+        return jsonify({'success':True})
+
+
+  # @TODO: (see above)
+  # Create a POST endpoint to get questions based on a search term. 
+  # It should return any questions for whom the search term 
+  # is a substring of the question. 
+
+  # TEST: Search by any phrase. The questions list will update to include 
+  # only question that include that string within their question. 
+  # Try using the word "title" to start. 
+
+  # @app.route('/questions/search', methods=['POST'])
+  # def search_questions():
+  #   pass
 
   '''
   @TODO: 
@@ -140,6 +173,10 @@ def create_app(test_config=None):
   categories in the left column will cause only questions of that 
   category to be shown. 
   '''
+  @app.route('/categories/<int:category_id>/questions')
+  def get_questions_by_category(category_id):
+    pass 
+    # write tests
 
 
   '''

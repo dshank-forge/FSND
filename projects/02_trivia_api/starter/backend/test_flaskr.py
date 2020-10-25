@@ -81,13 +81,59 @@ class TriviaTestCase(unittest.TestCase):
         question = 'what is the capital of Vermont?'
         answer = 'Montpelier'
         difficulty = 4
-        category = 'geography'
+        category = 2
         
-        res = self.client().post('/questions?question=' + question + '&answer=' + answer + '&difficulty=' + difficulty + '&category=' + category)
+        res = self.client().post('/questions?question=' + question + '&answer=' + answer + '&difficulty=' + str(difficulty) + '&category=' + str(category))
         data = json.loads(res.data)
 
+        try:
+            Q = Question.query.filter_by(question=question).one()
+        except:
+            Q = Question(question='q', answer='a', difficulty=1, category=2)
+
+        self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
+        self.assertEqual(Q.answer, answer)
+
+    def test_422_bad_question_post(self):
+        question = None
+        answer = 'a'
+        difficulty = '1'
+        category = 'geography'
+
+        res = self.client().post('/questions?answer=' + answer + '&difficulty=' + str(difficulty) + '&category=' + category)
+        # data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+     
+    def test_search_yes_results(self):
+        phrase = 'who'
+        res = self.client().post('/questions?searchTerm=' + phrase)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['have_results'], True)
     
+    def test_search_no_results(self):
+        phrase = 'zzZyYyyyxX'
+        res = self.client().post('/questions?searchTerm=' + phrase)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['have_results'], False)
+
+    def test_get_questions_by_category(self):
+        res = self.client.get('/categories/1/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'] : True)
+        self.assertTrue(data['questions']) 
+
+    def test_404_get_questions_bad_category(self):
+        pass 
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
