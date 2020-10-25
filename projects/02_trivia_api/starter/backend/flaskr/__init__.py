@@ -16,7 +16,8 @@ def create_app(test_config=None):
   '''
   @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
   '''
-  cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+  # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+  cors = CORS(app)
 
   '''
   @TODO: Use the after_request decorator to set Access-Control-Allow
@@ -93,10 +94,15 @@ def create_app(test_config=None):
   TEST: When you click the trash icon next to a question, the question will be removed.
   This removal will persist in the database and when you refresh the page. 
   '''
-  @app.route('/questions/<int:question_id>')
+  @app.route('/questions/<int:question_id>', methods=['DELETE'])
   def delete_question(question_id):
-    pass 
-    #
+    Q = Question.query.get(question_id)
+    try:  
+        Q.delete()
+    except: 
+        abort(422)
+
+    return jsonify({'success':True})
 
   '''
   @TODO: 
@@ -108,6 +114,12 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
+  @app.route('/questions', methods=['POST'])
+  def create_question():
+    q = request.args.get('question')
+    print(q)
+
+    return jsonify({'success':True})
 
   '''
   @TODO: 

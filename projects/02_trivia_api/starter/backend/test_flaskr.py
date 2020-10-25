@@ -66,17 +66,27 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 405)
 
     def test_delete_question_by_id(self):
-        res = self.client().delete('/questions/1')
+        res = self.client().delete('/questions/5')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         
-    def test_404_delete_non_existent_question(self):
+    def test_422_delete_non_existent_question(self):
         res = self.client().delete('/questions/1001')
 
-        self.assertEqual(res.status_code, 404)
+        self.assertEqual(res.status_code, 422)
 
+    def test_create_question(self):
+        question = 'what is the capital of Vermont?'
+        answer = 'Montpelier'
+        difficulty = 4
+        category = 'geography'
+        
+        res = self.client().post('/questions?question=' + question + '&answer=' + answer + '&difficulty=' + difficulty + '&category=' + category)
+        data = json.loads(res.data)
+
+        self.assertEqual(data['success'], True)
     
 
 # Make the tests conveniently executable
