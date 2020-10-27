@@ -174,9 +174,22 @@ def create_app(test_config=None):
   category to be shown. 
   '''
   @app.route('/categories/<int:category_id>/questions')
-  def get_questions_by_category(category_id):
-    pass 
-    # write tests
+  def get_questions_by_category(category_id): 
+    query_results = Question.query.filter_by(category=category_id).all()
+    questions = [{'question': q.question, 'answer': q.answer, 'category': q.category, 'difficulty': q.difficulty} for q in query_results]
+    total_questions = len(questions)
+
+    if total_questions == 0:
+        abort(404)
+
+    response = jsonify({
+      'success': True,
+      'questions': questions,
+      'total_questions': total_questions,
+      'current_category': category_id 
+    })
+
+    return response 
 
 
   '''
@@ -190,6 +203,11 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+
+  # @app.route('')
+  # def play_trivia():
+  #     pass 
+
 
   '''
   @TODO: 
