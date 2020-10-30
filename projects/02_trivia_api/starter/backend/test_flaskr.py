@@ -146,7 +146,12 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(returned_question)
-        self.assertEqual(returned_question.category, 2)
+        self.assertEqual(returned_question['category'], 2)
+
+    def test_422_no_active_category(self):  
+        res = self.client().post('/quizzes?previous_questions=[5,6,9]')
+
+        self.assertEqual(res.status_code, 422)
 
 
 # Make the tests conveniently executable

@@ -208,25 +208,36 @@ def create_app(test_config=None):
   @app.route('/quizzes', methods=['POST'])
   def play_trivia():
     previous_questions_str = request.args.get('previous_questions')
+    print('previous_quesitons_str: ' + str(previous_questions_str))
     active_category = request.args.get('quiz_category')
+    print('active_category: ' + str(active_category))
     if previous_questions_str:
+        print('previous_quesitons_str is real.')
         previous_questions = json.loads(previous_questions_str)
         questions = Question.query.filter(Question.category==active_category).filter(
                     ~Question.id.in_(previous_questions)).all()
     else:
+        print('previous_quesitons_str is NOT REAL.')
         questions = Question.query.filter(Question.category==active_category).all()
+
+    print('questions: ' + str(questions))
     
-    ids = [q.id for q in questions]
-    length = len(ids)
-    random_num = random.randint(0, length - 1)
-    q = questions[random_num]
+    try: 
+        ids = [q.id for q in questions]
+        length = len(ids)
+        random_num = random.randrange(0, length - 1, 1)
+        q = questions[random_num]
 
-    response = jsonify({
-      'success': True,
-      'question': {'question': q.question, 'answer': q.answer, 'category': q.category, 'difficulty': q.difficulty}
-    })
+        print(q)
 
-    return response
+        response = jsonify({
+          'success': True,
+          'question': {'question': q.question, 'answer': q.answer, 'category': q.category, 'difficulty': q.difficulty}
+        })
+
+        return response
+    except:
+        abort(422)
 
 
   '''
@@ -235,6 +246,56 @@ def create_app(test_config=None):
   including 404 and 422. 
   '''
   
+  @app.errorhandler(400)
+  def bad_request(error):
+    return jsonify({
+      "success": False,
+      "error": 400,
+      "message": "Bad request"
+    }), 400
+
+  @app.errorhandler(403)
+  def forbidden(error):
+    return jsonify({
+      "success": False,
+      "error": 403,
+      "message": "Forbidden resource"
+    }), 403
+
+  @app.errorhandler(404)
+  def not_found(error):
+    return jsonify({
+      "success": False,
+      "error": 404,
+      "message": "Resource not found"
+    }), 404
+
+  @app.errorhandler(405)
+  def method_not_allowed(error):
+    return jsonify({
+      "success": False,
+      "error": 405,
+      "message": "Method not allowed on this resource"
+    }), 405
+
+  @app.errorhandler(422)
+  def unprocessable_request(error):
+    return jsonify({
+      "success": False,
+      "error": 422,
+      "message": "Unprocessable request"
+    }), 422
+
+  @app.errorhandler(500)
+  def internal_server_error(error):
+    return jsonify({
+      "success": False,
+      "error": 500,
+      "message": "Internal server error"
+    }), 500
+
+
+
   return app
 
     
