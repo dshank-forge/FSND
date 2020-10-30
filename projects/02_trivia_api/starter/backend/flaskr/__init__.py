@@ -1,4 +1,5 @@
 import os
+import json
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -204,9 +205,28 @@ def create_app(test_config=None):
   and shown whether they were correct or not. 
   '''
 
-  # @app.route('')
-  # def play_trivia():
-  #     pass 
+  @app.route('/quizzes', methods=['POST'])
+  def play_trivia():
+    previous_questions_str = request.args.get('previous_questions')
+    active_category = request.args.get('quiz_category')
+    if previous_questions_str:
+        previous_questions = json.loads(previous_questions_str)
+        questions = Question.query.filter(Question.category==active_category).filter(
+                    ~Question.id.in_(previous_questions)).all()
+    else:
+        questions = Question.query.filter(Question.category==active_category).all()
+    
+    ids = [q.id for q in questions]
+    length = len(ids)
+    random_num = random.randint(0, length - 1)
+    q = questions[random_num]
+
+    response = jsonify({
+      'success': True,
+      'question': {'question': q.question, 'answer': q.answer, 'category': q.category, 'difficulty': q.difficulty}
+    })
+
+    return response
 
 
   '''
