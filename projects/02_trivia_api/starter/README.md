@@ -44,4 +44,4 @@ Pay special attention to what data the frontend is expecting from each API respo
 [View the README.md within ./frontend for more details.](./frontend/README.md)
 
 
-Bookmark - Working on the frontend.
+Bookmark - Fix unit tests. Then, documentation. Then, submit.

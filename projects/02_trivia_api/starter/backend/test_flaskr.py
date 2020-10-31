@@ -82,8 +82,9 @@ class TriviaTestCase(unittest.TestCase):
         answer = 'Montpelier'
         difficulty = 4
         category = 2
+        question_record = {'question': question, 'answer': answer, 'difficulty': difficulty, 'category': category}
         
-        res = self.client().post('/questions?question=' + question + '&answer=' + answer + '&difficulty=' + str(difficulty) + '&category=' + str(category))
+        res = self.client().post('/questions', json=question_record)
         data = json.loads(res.data)
 
         try:
@@ -108,8 +109,10 @@ class TriviaTestCase(unittest.TestCase):
      
     def test_search_yes_results(self):
         phrase = 'who'
-        res = self.client().post('/questions?searchTerm=' + phrase)
+        # res = self.client().post('/questions?searchTerm=' + phrase)
+        res = self.client().post('/questions', json={'searchTerm': phrase})
         data = json.loads(res.data)
+        print('returned data:' + str(data))
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
@@ -117,7 +120,7 @@ class TriviaTestCase(unittest.TestCase):
     
     def test_search_no_results(self):
         phrase = 'zzZyYyyyxX'
-        res = self.client().post('/questions?searchTerm=' + phrase)
+        res = self.client().post('/questions', json={'searchTerm': phrase})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -138,9 +141,10 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
 
     def test_return_next_quiz_question(self):
-        res = self.client().post('/quizzes?previous_questions=[5,6,9]&quiz_category=2')
+        res = self.client().post('/quizzes', json={'previous_questions':[5,6,9],'quiz_category':2})
         data = json.loads(res.data)
 
+        # print(data)
         returned_question = data['question']
 
         self.assertEqual(res.status_code, 200)
@@ -149,7 +153,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(returned_question['category'], 2)
 
     def test_422_no_active_category(self):  
-        res = self.client().post('/quizzes?previous_questions=[5,6,9]')
+        res = self.client().post('/quizzes', json={'previous_questions':[5,6,9]})
 
         self.assertEqual(res.status_code, 422)
 

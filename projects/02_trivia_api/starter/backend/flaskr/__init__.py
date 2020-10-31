@@ -117,11 +117,28 @@ def create_app(test_config=None):
   '''
   @app.route('/questions', methods=['POST'])
   def create_question():
-    question = request.args.get('question')
-    answer = request.args.get('answer')
-    difficulty = request.args.get('difficulty')
-    category = request.args.get('category')
-    search_term = request.args.get('searchTerm')
+    data = json.loads(request.data)
+
+    try:
+        question = data['question']
+    except KeyError:
+        question = None
+    try:
+        answer = data['answer']
+    except KeyError:
+        answer = None
+    try:
+        difficulty = data['difficulty']
+    except KeyError:
+        difficulty = None
+    try:
+        category = data['category']
+    except KeyError:
+        category = None
+    try:
+        search_term = data['searchTerm']
+    except KeyError:
+        search_term = None
 
     # Search for questions
     if search_term:
@@ -207,20 +224,27 @@ def create_app(test_config=None):
 
   @app.route('/quizzes', methods=['POST'])
   def play_trivia():
-    previous_questions_str = request.args.get('previous_questions')
-    print('previous_quesitons_str: ' + str(previous_questions_str))
-    active_category = request.args.get('quiz_category')
-    print('active_category: ' + str(active_category))
-    if previous_questions_str:
-        print('previous_quesitons_str is real.')
-        previous_questions = json.loads(previous_questions_str)
-        questions = Question.query.filter(Question.category==active_category).filter(
+    data = json.loads(request.data)
+
+    try: 
+        previous_questions = data['previous_questions']
+    except KeyError:
+        previous_questions = None
+    try:
+        active_category = data['quiz_category']
+    except KeyError:
+        active_category = None
+        abort(422)
+
+    print(previous_questions)
+
+    if previous_questions:
+        # print('previous_quesitons is real.')
+        questions = Question.query.filter(Question.category==active_category['id']).filter(
                     ~Question.id.in_(previous_questions)).all()
     else:
-        print('previous_quesitons_str is NOT REAL.')
-        questions = Question.query.filter(Question.category==active_category).all()
-
-    print('questions: ' + str(questions))
+        # print('previous_quesitons is NOT REAL.')
+        questions = Question.query.filter(Question.category==active_category['id']).all()
     
     try: 
         ids = [q.id for q in questions]
