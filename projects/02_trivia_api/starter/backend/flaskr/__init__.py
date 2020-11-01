@@ -224,7 +224,10 @@ def create_app(test_config=None):
 
   @app.route('/quizzes', methods=['POST'])
   def play_trivia():
+    print(request.data)
     data = json.loads(request.data)
+    print('processed data')
+    print(data)
 
     try: 
         previous_questions = data['previous_questions']
@@ -236,7 +239,9 @@ def create_app(test_config=None):
         active_category = None
         abort(422)
 
-    print(previous_questions)
+    # print(previous_questions)
+    print('active category: ')
+    print(active_category)
 
     if previous_questions:
         # print('previous_quesitons is real.')
@@ -252,7 +257,7 @@ def create_app(test_config=None):
         random_num = random.randrange(0, length - 1, 1)
         q = questions[random_num]
 
-        print(q)
+        # print(q)
 
         response = jsonify({
           'success': True,

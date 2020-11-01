@@ -101,8 +101,9 @@ class TriviaTestCase(unittest.TestCase):
         answer = 'a'
         difficulty = '1'
         category = 'geography'
+        question_record = {'question': question, 'answer': answer, 'difficulty': difficulty, 'category': category}
 
-        res = self.client().post('/questions?answer=' + answer + '&difficulty=' + str(difficulty) + '&category=' + category)
+        res = self.client().post('/questions', json=question_record)
         # data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 422)
@@ -141,7 +142,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
 
     def test_return_next_quiz_question(self):
-        res = self.client().post('/quizzes', json={'previous_questions':[5,6,9],'quiz_category':2})
+        res = self.client().post('/quizzes', json={'previous_questions': [5,6,9], 'quiz_category': {'type': 'Art', 'id': 2}})
         data = json.loads(res.data)
 
         # print(data)
