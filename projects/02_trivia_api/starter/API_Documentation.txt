@@ -1,0 +1,161 @@
+This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
+
+Endpoints
+GET '/categories'
+GET '/questions'
+DELETE '/questions/{question_id}'
+POST '/questions'
+GET '/categories/{category_id}/questions'
+POST '/quizzes'
+
+GET '/categories'
+- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category.
+- Request Arguments: None
+- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
+{'1' : "Science",
+'2' : "Art",
+'3' : "Geography",
+'4' : "History",
+'5' : "Entertainment",
+'6' : "Sports"}
+
+GET '/questions'
+- Fetches all of the questions in the database, all of the categories, the current category, and the total number of questions. Results are paginated every 10 records.
+- Request Arguments: None
+- Returns: An object with four keys: categories, current_category, questions, and total_questions. Categories is a list of the categories as strings.
+current_category is the id of the active category. Questions is a list of questions as strings. Total questions is an integer.
+{
+  "categories": [
+    "Science", 
+    "Art", 
+    "Geography", 
+    "History", 
+    "Entertainment", 
+    "Sports"
+  ], 
+  "current_category": 1, 
+  "questions": [
+    "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?", 
+    "What boxer's original name is Cassius Clay?", 
+    "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?", 
+    "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?", 
+    "Which is the only team to play in every soccer World Cup tournament?", 
+    "Which country won the first ever soccer World Cup in 1930?", 
+    "Who invented Peanut Butter?", 
+    "What is the largest lake in Africa?", 
+    "In which royal palace would you find the Hall of Mirrors?", 
+    "The Taj Mahal is located in which Indian city?"
+  ], 
+  "success": true, 
+  "total_questions": 23
+}
+
+DELETE '/questions/{question_id}'
+- Deletes a single question based on id. 
+- Request Arguments: question_id
+- Returns: None 
+{
+  "success": true
+}
+
+POST '/questions'
+- If given a set of details about a new question, posts your question to the database to be used in future quizzes. 
+If given a search term, it will instead return the questions that fit your search. 
+- Request Arguments: question, answer, difficulty, category, searchTerm 
+- Returns: If given a search term, it will return whether or not there are results as a boolean, the questions that fit the search as a list,
+the total number of questions that fit the search, and the current category. If given details about a new question instead of a search term,
+it will return nothing.
+
+question = 'What country is north of central China and south of Russia?'
+answer = 'Mongolia'
+difficulty = 1
+category = 3 
+{
+  "success": true
+}
+
+searchTerm = 'who'
+{
+  "current_category": 1, 
+  "have_results": true, 
+  "questions": [
+    {
+      "answer": "Maya Angelou", 
+      "category": 4, 
+      "difficulty": 2, 
+      "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+    }, 
+    {
+      "answer": "George Washington Carver", 
+      "category": 4, 
+      "difficulty": 2, 
+      "question": "Who invented Peanut Butter?"
+    }, 
+    {
+      "answer": "Alexander Fleming", 
+      "category": 1, 
+      "difficulty": 3, 
+      "question": "Who discovered penicillin?"
+    }, 
+    {
+      "answer": "Christopher Nolan", 
+      "category": 4, 
+      "difficulty": 4, 
+      "question": "Who was the director of the 1999 film \"Memento\"?"
+    }
+  ], 
+  "success": true, 
+  "total_questions": 4
+}
+
+GET '/categories/{category_id}/questions'
+- Fetches all of the questions for a given category id.
+- Request Arguments: category_id
+- Returns: All of the questions in that category as a list, the total number of questions in that category as an integer,
+and the category you supplied as an integer id.
+{
+  "current_category": 1, 
+  "questions": [
+    {
+      "answer": "The Liver", 
+      "category": 1, 
+      "difficulty": 4, 
+      "question": "What is the heaviest organ in the human body?"
+    }, 
+    {
+      "answer": "Alexander Fleming", 
+      "category": 1, 
+      "difficulty": 3, 
+      "question": "Who discovered penicillin?"
+    }, 
+    {
+      "answer": "Blood", 
+      "category": 1, 
+      "difficulty": 4, 
+      "question": "Hematology is a branch of medicine involving the study of what?"
+    }, 
+    {
+      "answer": "Vacuole", 
+      "category": 1, 
+      "difficulty": 3, 
+      "question": "What organelle stores water in plant cells?"
+    }
+  ], 
+  "success": true, 
+  "total_questions": 4
+}
+
+POST '/quizzes'
+- Lets the user play a game of trivia! Given a category and a list of previous questions, returns a new, random question that is
+in the active category. 
+- Request Arguments: quiz_category, previous_questions
+- Returns: A single question as a dictionary containing all of the question details as key-value pairs.
+{
+  "question": {
+    "answer": "Escher", 
+    "category": 2, 
+    "difficulty": 1, 
+    "question": "Which Dutch graphic artist\u2013initials M C was a creator of optical illusions?"
+  }, 
+  "success": true
+}
