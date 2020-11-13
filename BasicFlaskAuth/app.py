@@ -129,14 +129,18 @@ def requires_auth(permission=''):
         return wrapper
     return requires_auth_decorator
   
-# @app.route('/headers')
-# @requires_auth
-# def headers(payload):
-#     print(payload)
-#     return 'Access Granted'
+@app.route('/headers')
+@requires_auth
+def headers(payload):
+    print(payload)
+    return 'Access Granted'
 
 @app.route('/image')
 @requires_auth('get:images')
 def image(jwt):
     print(jwt)
     return 'not implemented'
+
+@app.route('/')
+def index():
+    return 'wassup' 
