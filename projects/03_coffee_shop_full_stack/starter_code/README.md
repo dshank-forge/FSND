@@ -34,4 +34,4 @@ The `./frontend` directory contains a complete Ionic frontend to consume the dat
 
 [View the README.md within ./frontend for more details.](./frontend/README.md)
 
-Bookmark - Made the git repo stop tracking the env folder in this directory and in the basic flask auth directory.
+Bookmark - Setting up my Auth0 app/api.
