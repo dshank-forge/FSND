@@ -34,4 +34,4 @@ The `./frontend` directory contains a complete Ionic frontend to consume the dat
 
 [View the README.md within ./frontend for more details.](./frontend/README.md)
 
-Bookmark - Setting up my Auth0 app/api.
+Bookmark - Implementing verify_decode_jwt() in auth.py in the backend

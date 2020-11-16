@@ -5,9 +5,11 @@ from jose import jwt
 from urllib.request import urlopen
 
 
-AUTH0_DOMAIN = 'udacity-fsnd.auth0.com'
+# AUTH0_DOMAIN = 'udacity-fsnd.auth0.com'
+AUTH0_DOMAIN = 'goatpig.us.auth0.com'
 ALGORITHMS = ['RS256']
-API_AUDIENCE = 'dev'
+# API_AUDIENCE = 'dev'
+API_AUDIENCE = 'coffee'
 
 ## AuthError Exception
 '''
@@ -31,7 +33,15 @@ class AuthError(Exception):
     return the token part of the header
 '''
 def get_token_auth_header():
-   raise Exception('Not Implemented')
+    headers = request.headers
+    auth_part = headers['Authorization']
+    try:
+        bearer = auth_part[0]
+        token = auth_part[1]
+    except:
+        abort(401)
+    return token 
+    
 
 '''
 @TODO implement check_permissions(permission, payload) method
@@ -45,7 +55,13 @@ def get_token_auth_header():
     return true otherwise
 '''
 def check_permissions(permission, payload):
-    raise Exception('Not Implemented')
+    try:
+        permissions_array = payload['permissions']
+        if permission not in permissions_array:
+            'raise an error' 
+    except:
+        abort(401)
+    return True 
 
 '''
 @TODO implement verify_decode_jwt(token) method
