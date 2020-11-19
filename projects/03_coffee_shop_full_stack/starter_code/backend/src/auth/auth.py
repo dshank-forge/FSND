@@ -10,6 +10,7 @@ AUTH0_DOMAIN = 'goatpig.us.auth0.com'
 ALGORITHMS = ['RS256']
 # API_AUDIENCE = 'dev'
 API_AUDIENCE = 'coffee'
+CLIENT_SECRET = 'wsoGdfUUNJ2gW8PRUqfDTYksFdHPEkVHqjCuufsMHakgpM6WTBXQpA54RMkS1qoY'
 
 ## AuthError Exception
 '''
@@ -58,7 +59,7 @@ def check_permissions(permission, payload):
     try:
         permissions_array = payload['permissions']
         if permission not in permissions_array:
-            'raise an error' 
+            abort(401) 
     except:
         abort(401)
     return True 
@@ -78,7 +79,10 @@ def check_permissions(permission, payload):
 '''
 def verify_decode_jwt(token):
     response = urlopen('https://'+AUTH0_DOMAIN+'/.well-known/jwks.json')
+    decoded_jwt = jwt.decode(token, CLIENT_SECRET, algorithms=ALGORITHMS)
+
     # do we really validate the claims or is that in the check_permissions method?
+    # Validation of claims is covered by the check_permissions method!
 
 
 '''
