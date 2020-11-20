@@ -34,4 +34,5 @@ The `./frontend` directory contains a complete Ionic frontend to consume the dat
 
 [View the README.md within ./frontend for more details.](./frontend/README.md)
 
-Bookmark - Implementing verify_decode_jwt() in auth.py in the backend. Looking into how to verify a token using the Auth0 JWKS (JSON Web Key Set). I think we need to focus on the "x5c" and "kid" items of the JSON object. RSA key format error - JOSE dependency issue?
+Bookmark - Working on the GET /drinks endpoint in api.py.
+Skipping for now: [Looking into how to decode a JWT and then verify it using the Auth0 JWKS (JSON Web Key Set). RSA key format error when I try to decode use Jose.]
