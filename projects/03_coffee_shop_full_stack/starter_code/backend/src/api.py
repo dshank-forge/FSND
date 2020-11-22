@@ -52,13 +52,26 @@ def get_drinks_with_detail():
         it should create a new row in the drinks table
         it should require the 'post:drinks' permission
         it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
+    returns status code 200 and json {"success": True, "drinks": drink} where drink is an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
 # require 'post:drinks' permission
 @app.route('/drinks', methods=['POST'])
 def create_drink():
-    response = 'hello world'
+    data = json.loads(request.data)
+    id = data.get('id', None)
+    title = data.get('title', None)
+    recipe = data.get('recipe', None)
+
+    try:
+        new_drink = Drink(title=title, recipe=recipe)
+        new_drink.insert()
+    except(ArithmeticError, AttributeError, LookupError, SyntaxError, ValueError) as e:
+        print('There was an exception:')
+        print(e)
+        abort(422)
+
+    response = jsonify({'success': True, 'drinks': [new_drink.long()]})
     return response 
 
 
@@ -73,7 +86,31 @@ def create_drink():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
+# require 'patch:drinks' permission
+@app.route('/drinks/<int:id>', methods=['PATCH'])
+def edit_drink(id):
+    try:
+        db_drink = Drink.query.get(id)
+    except:
+        abort(404)
 
+    data = json.loads(request.data)
+    title = data.get('title', None)
+    recipe = data.get('recipe', None)
+
+    try:
+        if title:
+            db_drink.title = title
+        if recipe:
+            db_drink.recipe = recipe
+        db_drink.update()
+    except(ArithmeticError, AttributeError, LookupError, SyntaxError, ValueError) as e:
+        print('There was an exception:')
+        print(e)
+        abort(422)
+    
+    response = jsonify({'success': True, 'drinks': [db_drink.long()]})
+    return response
 
 '''
 @TODO implement endpoint
@@ -85,6 +122,11 @@ def create_drink():
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
+# require 'delete:drinks' permission
+@app.route('/drinks/<int:id>', methods='DELETE')
+def delete_drink(id):
+    pass
+
 
 
 ## Error Handling
