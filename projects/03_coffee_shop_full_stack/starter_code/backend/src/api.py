@@ -4,8 +4,8 @@ from sqlalchemy import exc
 import json
 from flask_cors import CORS
 
-from .database.models import db_drop_and_create_all, setup_db, Drink
-from .auth.auth import AuthError, requires_auth
+from .database.models import db_drop_and_create_all, setup_db, Drink # removed a period from the start of database.models. Or not.
+from .auth.auth import AuthError, requires_auth # removed a period from the start of auth.auth. Or not.
 
 app = Flask(__name__)
 setup_db(app)
@@ -20,16 +20,14 @@ db_drop_and_create_all()
 
 ## ROUTES
 '''
-@TODO implement endpoint
-    GET /drinks
-        it should be a public endpoint
-        it should contain only the drink.short() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
+@DONE
 '''
 @app.route('/drinks')
 def get_drinks():
-    return 'hello world'
+    db_drinks = Drink.query.all()
+    drinks = [d.short() for d in db_drinks]
+    response = jsonify({'success': True, 'drinks': drinks})
+    return response 
 
 '''
 @TODO implement endpoint
@@ -39,6 +37,13 @@ def get_drinks():
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+# require 'get:drinks-detail' permission
+@app.route('/drinks-detail')
+def get_drinks_with_detail():
+    db_drinks = Drink.query.all()
+    drinks = [d.long() for d in db_drinks]
+    response = jsonify({'success': True, 'drinks': drinks})
+    return response
 
 
 '''
@@ -50,6 +55,11 @@ def get_drinks():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
+# require 'post:drinks' permission
+@app.route('/drinks', methods=['POST'])
+def create_drink():
+    response = 'hello world'
+    return response 
 
 
 '''
