@@ -1,7 +1,7 @@
 import json
 from flask import request, _request_ctx_stack
 from functools import wraps
-from jose import jwt
+from jose import jwt, exceptions
 from urllib.request import urlopen
 
 
@@ -26,7 +26,7 @@ class AuthError(Exception):
 ## Auth Header
 
 '''
-@TODO implement get_token_auth_header() method
+@DONE implement get_token_auth_header() method
     it should attempt to get the header from the request
         it should raise an AuthError if no header is present
     it should attempt to split bearer and the token
@@ -34,18 +34,19 @@ class AuthError(Exception):
     return the token part of the header
 '''
 def get_token_auth_header():
-    headers = request.headers
-    auth_part = headers['Authorization']
     try:
-        bearer = auth_part[0]
-        token = auth_part[1]
-    except:
-        abort(401)
+        headers = request.headers
+        auth_part = headers['Authorization']
+        split_auth_part = auth_part.split()
+        bearer = split_auth_part[0]
+        token = split_auth_part[1]
+    except Exception as e:
+        raise AuthError(e, 401)
     return token 
     
 
 '''
-@TODO implement check_permissions(permission, payload) method
+@DONE implement check_permissions(permission, payload) method
     @INPUTS
         permission: string permission (i.e. 'post:drink')
         payload: decoded jwt payload
@@ -59,9 +60,9 @@ def check_permissions(permission, payload):
     try:
         permissions_array = payload['permissions']
         if permission not in permissions_array:
-            abort(401) 
-    except:
-        abort(401)
+            'oops' 
+    except Exception as e:
+        raise AuthError(e, 401)
     return True 
 
 '''
@@ -78,9 +79,14 @@ def check_permissions(permission, payload):
     !!NOTE urlopen has a common certificate error described here: https://stackoverflow.com/questions/50236117/scraping-ssl-certificate-verify-failed-error-for-http-en-wikipedia-org
 '''
 def verify_decode_jwt(token):
-    response = urlopen('https://'+AUTH0_DOMAIN+'/.well-known/jwks.json')
-    decoded_jwt = jwt.decode(token, CLIENT_SECRET, algorithms=ALGORITHMS)
+    jwks_response = urlopen('https://'+AUTH0_DOMAIN+'/.well-known/jwks.json')
+    try:    
+        decoded_jwt = jwt.decode(token, CLIENT_SECRET, algorithms=ALGORITHMS)
+    except exceptions.JWKError as e:
+        print('There was a dependency error:')
+        print(e)
 
+    #use except KeyError so that I can still test code in the context of the full app
     # do we really validate the claims or is that in the check_permissions method?
     # Validation of claims is covered by the check_permissions method!
 

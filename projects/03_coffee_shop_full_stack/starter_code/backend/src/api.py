@@ -12,7 +12,7 @@ setup_db(app)
 CORS(app)
 
 '''
-@TODO uncomment the following line to initialize the datbase
+@DONE uncomment the following line to initialize the datbase
 !! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
 !! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
 '''
@@ -123,11 +123,22 @@ def edit_drink(id):
         or appropriate status code indicating reason for failure
 '''
 # require 'delete:drinks' permission
-@app.route('/drinks/<int:id>', methods='DELETE')
+@app.route('/drinks/<int:id>', methods=['DELETE'])
 def delete_drink(id):
-    pass
+    try:
+        db_drink = Drink.query.get(id)
+    except:
+        abort(404)
 
+    try:
+        db_drink.delete()
+    except(ArithmeticError, AttributeError, LookupError, SyntaxError, ValueError) as e:
+        print('There was an exception:')
+        print(e)
+        abort(422)
 
+    response = jsonify({'success': True, 'delete': id})
+    return response 
 
 ## Error Handling
 '''
@@ -142,7 +153,7 @@ def unprocessable(error):
                     }), 422
 
 '''
-@TODO implement error handlers using the @app.errorhandler(error) decorator
+@DONE implement error handlers using the @app.errorhandler(error) decorator
     each error handler should return (with approprate messages):
              jsonify({
                     "success": False, 
@@ -153,12 +164,26 @@ def unprocessable(error):
 '''
 
 '''
-@TODO implement error handler for 404
+@DONE implement error handler for 404
     error handler should conform to general task above 
 '''
+@app.errorhandler(404)
+def resource_not_found(error):
+    return jsonify({
+                    "success": False,
+                    "error": 404,
+                    "message": "resource not found"
+                    }), 404
 
 
 '''
-@TODO implement error handler for AuthError
+@DONE implement error handler for AuthError
     error handler should conform to general task above 
 '''
+@app.errorhandler(401)
+def unauthorized(error):
+    return jsonify({
+                    "success": False,
+                    "error": 401,
+                    "message": "user is not authorized to access this resource"
+                    }), 401

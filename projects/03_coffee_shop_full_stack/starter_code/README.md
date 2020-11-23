@@ -34,5 +34,5 @@ The `./frontend` directory contains a complete Ionic frontend to consume the dat
 
 [View the README.md within ./frontend for more details.](./frontend/README.md)
 
-Bookmark - Working on the DELETE /drinks/id endpoint in api.py.
-Skipping for now: [Looking into how to decode a JWT and then verify it using the Auth0 JWKS (JSON Web Key Set). RSA key format error when I try to decode use Jose.] -- Maybe try pyjwt, jwcrypto, or authlib
+Bookmark - Finish verify_decode_jwt() method as best I can.
+Skipping for now: RSA key format error when I try to decode use Jose. -- Maybe try pyjwt, jwcrypto, or authlib
