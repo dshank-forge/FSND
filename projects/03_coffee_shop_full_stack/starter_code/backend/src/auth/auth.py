@@ -67,7 +67,7 @@ def check_permissions(permission, payload):
 
 '''
 @TODO implement verify_decode_jwt(token) method
-    @INPUTS
+    @DONE
         token: a json web token (string)
 
     it should be an Auth0 token with key id (kid)
@@ -86,13 +86,16 @@ def verify_decode_jwt(token):
         print('There was a dependency error:')
         print(e)
 
-    #use except KeyError so that I can still test code in the context of the full app
-    # do we really validate the claims or is that in the check_permissions method?
-    # Validation of claims is covered by the check_permissions method!
+    try:
+        decoded_jwt['kid'] == jwks_response['kid']
+    except Exception as e:
+        raise AuthError(e, 401)
+
+    return decoded_jwt['permissions'] 
 
 
 '''
-@TODO implement @requires_auth(permission) decorator method
+@DONE implement @requires_auth(permission) decorator method
     @INPUTS
         permission: string permission (i.e. 'post:drink')
 

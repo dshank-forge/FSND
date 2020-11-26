@@ -30,14 +30,14 @@ def get_drinks():
     return response 
 
 '''
-@TODO implement endpoint
+@DONE implement endpoint
     GET /drinks-detail
         it should require the 'get:drinks-detail' permission
         it should contain the drink.long() data representation
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
-# require 'get:drinks-detail' permission
+@requires_auth('get:drinks-detail')
 @app.route('/drinks-detail')
 def get_drinks_with_detail():
     db_drinks = Drink.query.all()
@@ -47,7 +47,7 @@ def get_drinks_with_detail():
 
 
 '''
-@TODO implement endpoint
+@DONE implement endpoint
     POST /drinks
         it should create a new row in the drinks table
         it should require the 'post:drinks' permission
@@ -55,7 +55,7 @@ def get_drinks_with_detail():
     returns status code 200 and json {"success": True, "drinks": drink} where drink is an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
-# require 'post:drinks' permission
+@requires_auth('post:drinks')
 @app.route('/drinks', methods=['POST'])
 def create_drink():
     data = json.loads(request.data)
@@ -76,7 +76,7 @@ def create_drink():
 
 
 '''
-@TODO implement endpoint
+@DONE implement endpoint
     PATCH /drinks/<id>
         where <id> is the existing model id
         it should respond with a 404 error if <id> is not found
@@ -86,7 +86,7 @@ def create_drink():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
-# require 'patch:drinks' permission
+@requires_auth('patch:drinks')
 @app.route('/drinks/<int:id>', methods=['PATCH'])
 def edit_drink(id):
     try:
@@ -113,7 +113,7 @@ def edit_drink(id):
     return response
 
 '''
-@TODO implement endpoint
+@DONE implement endpoint
     DELETE /drinks/<id>
         where <id> is the existing model id
         it should respond with a 404 error if <id> is not found
@@ -122,7 +122,7 @@ def edit_drink(id):
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
-# require 'delete:drinks' permission
+@requires_auth('delete:drinks')
 @app.route('/drinks/<int:id>', methods=['DELETE'])
 def delete_drink(id):
     try:
