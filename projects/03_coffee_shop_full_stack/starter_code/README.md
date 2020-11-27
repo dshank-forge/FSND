@@ -34,5 +34,6 @@ The `./frontend` directory contains a complete Ionic frontend to consume the dat
 
 [View the README.md within ./frontend for more details.](./frontend/README.md)
 
-Bookmark - Completed TODOs so I'm doing some basic testing. Currently getting a Callback URL mismatch when trying to login. Make sure JWTs are still valid.
+Bookmark - Completed TODOs. Make sure JWTs are still valid.
 Skipping for now: RSA key format error when I try to decode use Jose. -- Maybe try pyjwt, jwcrypto, or authlib
+Note: Auth0 trial expires Sun 11/29.

@@ -135,7 +135,7 @@ def delete_drink(id):
     except(ArithmeticError, AttributeError, LookupError, SyntaxError, ValueError) as e:
         print('There was an exception:')
         print(e)
-        abort(422)
+        abort(401)
 
     response = jsonify({'success': True, 'delete': id})
     return response 
