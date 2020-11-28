@@ -1,9 +1,9 @@
-venv/
-.vscode/
-__pycache__/
-test.db
-**/env/**
-**/BasicFlaskAuth/**
+.vscode
+__pycache__
+venv
+env/
+frontend/node_modules/
+backend/test_stuff.py
 
 # OS generated files #
 ######################

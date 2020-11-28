@@ -4,39 +4,31 @@ from sqlalchemy import exc
 import json
 from flask_cors import CORS
 
-from .database.models import db_drop_and_create_all, setup_db, Drink # removed a period from the start of database.models. Or not.
-from .auth.auth import AuthError, requires_auth # removed a period from the start of auth.auth. Or not.
+# removed a period from the start of database.models. Or not.
+from .database.models import db_drop_and_create_all, setup_db, Drink
+# removed a period from the start of auth.auth. Or not.
+from .auth.auth import AuthError, requires_auth
 
 app = Flask(__name__)
 setup_db(app)
 CORS(app)
 
-'''
-@DONE uncomment the following line to initialize the datbase
-!! NOTE THIS WILL DROP ALL RECORDS AND START YOUR DB FROM SCRATCH
-!! NOTE THIS MUST BE UNCOMMENTED ON FIRST RUN
-'''
 db_drop_and_create_all()
 
-## ROUTES
-'''
-@DONE
-'''
+# ROUTES
+
+
 @app.route('/drinks')
 def get_drinks():
-    db_drinks = Drink.query.all()
-    drinks = [d.short() for d in db_drinks]
+    try:
+        db_drinks = Drink.query.all()
+    except Exception:
+        abort(404)
+    drinks = [drink.short() for drink in db_drinks]
     response = jsonify({'success': True, 'drinks': drinks})
-    return response 
+    return response
 
-'''
-@DONE implement endpoint
-    GET /drinks-detail
-        it should require the 'get:drinks-detail' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
-        or appropriate status code indicating reason for failure
-'''
+
 @requires_auth('get:drinks-detail')
 @app.route('/drinks-detail')
 def get_drinks_with_detail():
@@ -46,15 +38,6 @@ def get_drinks_with_detail():
     return response
 
 
-'''
-@DONE implement endpoint
-    POST /drinks
-        it should create a new row in the drinks table
-        it should require the 'post:drinks' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink} where drink is an array containing only the newly created drink
-        or appropriate status code indicating reason for failure
-'''
 @requires_auth('post:drinks')
 @app.route('/drinks', methods=['POST'])
 def create_drink():
@@ -66,32 +49,21 @@ def create_drink():
     try:
         new_drink = Drink(title=title, recipe=recipe)
         new_drink.insert()
-    except(ArithmeticError, AttributeError, LookupError, SyntaxError, ValueError) as e:
+    except Exception as e:
         print('There was an exception:')
         print(e)
         abort(422)
 
     response = jsonify({'success': True, 'drinks': [new_drink.long()]})
-    return response 
+    return response
 
 
-'''
-@DONE implement endpoint
-    PATCH /drinks/<id>
-        where <id> is the existing model id
-        it should respond with a 404 error if <id> is not found
-        it should update the corresponding row for <id>
-        it should require the 'patch:drinks' permission
-        it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
-        or appropriate status code indicating reason for failure
-'''
 @requires_auth('patch:drinks')
 @app.route('/drinks/<int:id>', methods=['PATCH'])
 def edit_drink(id):
     try:
         db_drink = Drink.query.get(id)
-    except:
+    except Exception:
         abort(404)
 
     data = json.loads(request.data)
@@ -104,86 +76,58 @@ def edit_drink(id):
         if recipe:
             db_drink.recipe = recipe
         db_drink.update()
-    except(ArithmeticError, AttributeError, LookupError, SyntaxError, ValueError) as e:
+    except Exception as e:
         print('There was an exception:')
         print(e)
         abort(422)
-    
+
     response = jsonify({'success': True, 'drinks': [db_drink.long()]})
     return response
 
-'''
-@DONE implement endpoint
-    DELETE /drinks/<id>
-        where <id> is the existing model id
-        it should respond with a 404 error if <id> is not found
-        it should delete the corresponding row for <id>
-        it should require the 'delete:drinks' permission
-    returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
-        or appropriate status code indicating reason for failure
-'''
+
 @requires_auth('delete:drinks')
 @app.route('/drinks/<int:id>', methods=['DELETE'])
 def delete_drink(id):
     try:
         db_drink = Drink.query.get(id)
-    except:
+    except Exception:
         abort(404)
 
     try:
         db_drink.delete()
-    except(ArithmeticError, AttributeError, LookupError, SyntaxError, ValueError) as e:
+    except Exception as e:
         print('There was an exception:')
         print(e)
         abort(401)
 
     response = jsonify({'success': True, 'delete': id})
-    return response 
+    return response
 
-## Error Handling
-'''
-Example error handling for unprocessable entity
-'''
+
+# Error Handling
+
 @app.errorhandler(422)
 def unprocessable(error):
     return jsonify({
-                    "success": False, 
-                    "error": 422,
-                    "message": "unprocessable"
-                    }), 422
+        "success": False,
+        "error": 422,
+        "message": "unprocessable"
+    }), 422
 
-'''
-@DONE implement error handlers using the @app.errorhandler(error) decorator
-    each error handler should return (with approprate messages):
-             jsonify({
-                    "success": False, 
-                    "error": 404,
-                    "message": "resource not found"
-                    }), 404
 
-'''
-
-'''
-@DONE implement error handler for 404
-    error handler should conform to general task above 
-'''
 @app.errorhandler(404)
 def resource_not_found(error):
     return jsonify({
-                    "success": False,
-                    "error": 404,
-                    "message": "resource not found"
-                    }), 404
+        "success": False,
+        "error": 404,
+        "message": "resource not found"
+    }), 404
 
 
-'''
-@DONE implement error handler for AuthError
-    error handler should conform to general task above 
-'''
 @app.errorhandler(401)
 def unauthorized(error):
     return jsonify({
-                    "success": False,
-                    "error": 401,
-                    "message": "user is not authorized to access this resource"
-                    }), 401
+        "success": False,
+        "error": 401,
+        "message": "user is not authorized to access this resource"
+    }), 401
