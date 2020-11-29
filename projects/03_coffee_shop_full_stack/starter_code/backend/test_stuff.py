@@ -22,7 +22,7 @@ def verify_decode_jwt(token):
     #     print('dependency error')
 
 
-mytoken = b'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndoMXVtVkZzZ0pUZzNEc1dZcU55NyJ9.eyJpc3MiOiJodHRwczovL2dvYXRwaWcudXMuYXV0aDAuY29tLyIsInN1YiI6Imdvb2dsZS1vYXV0aDJ8MTE1MjAyNjQwNzQ2ODAxMDAwODkwIiwiYXVkIjpbImNvZmZlZSIsImh0dHBzOi8vZ29hdHBpZy51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNjA1NDkxMTYzLCJleHAiOjE2MDU0OTgzNjMsImF6cCI6ImwyaU5Hb2pZbXQyazkxVXlmdzJidXhaanJrbEFMMFI4Iiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCIsInBlcm1pc3Npb25zIjpbXX0.mFGOq6czt9lSlKFG_wR5IwJm_lcY7cgRkmYgcKCBfQPlsbFbRleTkBdGBaqfc4c6AL1rdGhNQBOKrAXBNGdvQFxfVHYaUceNK-JFPzlHa2Whbu_ZgwupLD5kxgWHSzZcnwU_rXU93DIxsqiZLvG7LFm0fk7QPA7j7UiKPrNaGhsGT9VewzGraAMBwc84q_71NJ3W7w5ccI_EJ_nBYhxu2QxDiMfSWLvis4-_XQvE9Xg4qzDzU2aBhnFLCbf-AodnEYxpB8k9o4Jbv0MCK7KqJDGTvlSMH8vhQsNDhixr9OmCnBhUs_Of1t0oKaU9VFQn1NA78j2e-WKr2u7uTQjA-w'
+mytoken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndoMXVtVkZzZ0pUZzNEc1dZcU55NyJ9.eyJpc3MiOiJodHRwczovL2dvYXRwaWcudXMuYXV0aDAuY29tLyIsInN1YiI6Imdvb2dsZS1vYXV0aDJ8MTE1MjAyNjQwNzQ2ODAxMDAwODkwIiwiYXVkIjpbImNvZmZlZSIsImh0dHBzOi8vZ29hdHBpZy51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNjA1NDkxMTYzLCJleHAiOjE2MDU0OTgzNjMsImF6cCI6ImwyaU5Hb2pZbXQyazkxVXlmdzJidXhaanJrbEFMMFI4Iiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCIsInBlcm1pc3Npb25zIjpbXX0.mFGOq6czt9lSlKFG_wR5IwJm_lcY7cgRkmYgcKCBfQPlsbFbRleTkBdGBaqfc4c6AL1rdGhNQBOKrAXBNGdvQFxfVHYaUceNK-JFPzlHa2Whbu_ZgwupLD5kxgWHSzZcnwU_rXU93DIxsqiZLvG7LFm0fk7QPA7j7UiKPrNaGhsGT9VewzGraAMBwc84q_71NJ3W7w5ccI_EJ_nBYhxu2QxDiMfSWLvis4-_XQvE9Xg4qzDzU2aBhnFLCbf-AodnEYxpB8k9o4Jbv0MCK7KqJDGTvlSMH8vhQsNDhixr9OmCnBhUs_Of1t0oKaU9VFQn1NA78j2e-WKr2u7uTQjA-w'
 
 # verify_decode_jwt(mytoken)
 # I get an error that the RSA key format is not supported. Maybe this is because my pycryptodome or
@@ -30,9 +30,16 @@ mytoken = b'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndoMXVtVkZzZ0pUZzNEc1dZ
 
 # https://goatpig.us.auth0.com/.well-known/jwks.json
 
-encoded_token = jwt.encode(
-    {'some': 'payload'}, CLIENT_SECRET, algorithm='RS256')
-print(encoded_token)
+# encoded_token = jwt.encode(
+#     {'some': 'payload'}, CLIENT_SECRET, algorithm='RS256')
+# print(encoded_token)
 
-# decoded_token = jwt.decode(mytoken, CLIENT_SECRET, algorithms=['RS256'])
-# print(decoded_token)
+jwks_response = urlopen('https://'+AUTH0_DOMAIN+'/.well-known/jwks.json')
+data = json.load(jwks_response)
+public_key = data['keys'][0]
+read_public_key = public_key.read()
+
+decoded_token = jwt.decode(mytoken, read_public_key, algorithms=['RS256'])
+print(decoded_token)
+
+# "Expecting a PEM-formatted key"
