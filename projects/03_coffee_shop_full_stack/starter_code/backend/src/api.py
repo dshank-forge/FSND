@@ -1,13 +1,14 @@
-import os
-from flask import Flask, request, jsonify, abort
-from sqlalchemy import exc
 import json
+import os
+from flask import Flask, request, jsonify, abort, _request_ctx_stack
 from flask_cors import CORS
+from functools import wraps
+from jose import jwt, exceptions
+from sqlalchemy import exc
+from urllib.request import urlopen
 
-# removed a period from the start of database.models. Or not.
 from .database.models import db_drop_and_create_all, setup_db, Drink
-# removed a period from the start of auth.auth. Or not.
-from .auth.auth import AuthError, requires_auth
+from .auth.auth import AuthError, requires_auth, get_token_auth_header, verify_decode_jwt, check_permissions
 
 app = Flask(__name__)
 setup_db(app)
@@ -28,12 +29,12 @@ def get_drinks():
     response = jsonify({'success': True, 'drinks': drinks})
     return response
 
-
-@requires_auth('get:drinks-detail')
 @app.route('/drinks-detail')
+@requires_auth('get:drinks-detail')
 def get_drinks_with_detail():
     db_drinks = Drink.query.all()
     drinks = [d.long() for d in db_drinks]
+    print(drinks)
     response = jsonify({'success': True, 'drinks': drinks})
     return response
 
@@ -41,13 +42,18 @@ def get_drinks_with_detail():
 @requires_auth('post:drinks')
 @app.route('/drinks', methods=['POST'])
 def create_drink():
-    data = json.loads(request.data)
+    try:
+        data = json.loads(request.data)
+    except Exception:
+        abort(401)
     id = data.get('id', None)
     title = data.get('title', None)
     recipe = data.get('recipe', None)
+    recipe_as_list = [recipe]
+    recipe_as_list_as_string = '"' + str(recipe_as_list) + '"'
 
     try:
-        new_drink = Drink(title=title, recipe=recipe)
+        new_drink = Drink(title=title, recipe=recipe_as_list_as_string)
         new_drink.insert()
     except Exception as e:
         print('There was an exception:')
@@ -62,9 +68,10 @@ def create_drink():
 @app.route('/drinks/<int:id>', methods=['PATCH'])
 def edit_drink(id):
     try:
-        db_drink = Drink.query.get(id)
+        db_drink = Drink.query.get(id) # Maybe this doesn't throw an exception even if it can't find a drink with the given id
+        db_drink.id
     except Exception:
-        abort(404)
+        abort(401)
 
     data = json.loads(request.data)
     title = data.get('title', None)

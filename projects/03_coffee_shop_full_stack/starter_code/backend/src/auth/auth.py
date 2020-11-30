@@ -1,15 +1,11 @@
 import json
 from flask import request, _request_ctx_stack
 from functools import wraps
-# from jose import jwt, exceptions
-import jwt
+from jose import jwt, exceptions
 from urllib.request import urlopen
 
-
-# AUTH0_DOMAIN = 'udacity-fsnd.auth0.com'
 AUTH0_DOMAIN = 'goatpig.us.auth0.com'
 ALGORITHMS = ['RS256']
-# API_AUDIENCE = 'dev'
 API_AUDIENCE = 'coffee'
 CLIENT_SECRET = 'wsoGdfUUNJ2gW8PRUqfDTYksFdHPEkVHqjCuufsMHakgpM6WTBXQpA54RMkS1qoY'
 
@@ -19,7 +15,6 @@ AuthError Exception
 A standardized way to communicate auth failure modes
 '''
 
-
 class AuthError(Exception):
     def __init__(self, error, status_code):
         self.error = error
@@ -27,16 +22,6 @@ class AuthError(Exception):
 
 
 # Auth Header
-
-'''
-@DONE implement get_token_auth_header() method
-    it should attempt to get the header from the request
-        it should raise an AuthError if no header is present
-    it should attempt to split bearer and the token
-        it should raise an AuthError if the header is malformed
-    return the token part of the header
-'''
-
 
 def get_token_auth_header():
     try:
@@ -49,30 +34,41 @@ def get_token_auth_header():
         raise AuthError(e, 401)
     return token
 
-
-'''
-@DONE implement check_permissions(permission, payload) method
-    @INPUTS
-        permission: string permission (i.e. 'post:drink')
-        payload: decoded jwt payload
-
-    it should raise an AuthError if permissions are not included in the payload
-        !!NOTE check your RBAC settings in Auth0
-    it should raise an AuthError if the requested permission string is not
-    in the payload permissions array
-    return true otherwise
-'''
-
-
 def check_permissions(permission, payload):
     try:
         permissions_array = payload['permissions']
+        print('permission:' + str(permission))
+        print('permissions array: ' + str(permissions_array))
         if permission not in permissions_array:
             'oops'
     except Exception as e:
+        print('exception')
         raise AuthError(e, 401)
     return True
 
+# The following function has been adapted from the Auth0 Docs - "Python API: Authorization" by Luciano Balmaceda
+# URL: https://auth0.com/docs/quickstart/backend/python/01-authorization?_ga=2.212761047.219893380.1606509180-267051542.1604770864#create-the-jwt-validation-decorator
+# Date: 11/29/2020
+
+# ----- Begin Citation ----- # 
+
+def create_verification_key(jwks_dict, token):
+    unverified_header = jwt.get_unverified_header(token)
+
+    for key in jwks_dict["keys"]:
+        if key["kid"] == unverified_header["kid"]:
+            rsa_key = {
+                "kty": key["kty"],
+                "kid": key["kid"],
+                "use": key["use"],
+                "n": key["n"],
+                "e": key["e"]
+            }
+            break 
+
+    return rsa_key
+
+# ----- End Citation ----- # 
 
 '''
 @TODO implement verify_decode_jwt(token) method
@@ -88,21 +84,21 @@ def check_permissions(permission, payload):
 https://stackoverflow.com/questions/50236117/scraping-ssl-certificate-verify-failed-error-for-http-en-wikipedia-org
 '''
 
-
 def verify_decode_jwt(token):
-    jwks_response = urlopen('https://'+AUTH0_DOMAIN+'/.well-known/jwks.json')
+    jwks_dictionary = json.loads(urlopen('https://'+AUTH0_DOMAIN+'/.well-known/jwks.json').read())
+    
     try:
-        decoded_jwt = jwt.decode(token, CLIENT_SECRET, algorithms=ALGORITHMS)
-    except exceptions.JWKError as e:
-        print('There was a dependency error:')
-        print(e)
-
-    try:
-        decoded_jwt['kid'] == jwks_response['kid']
+        verification_key = create_verification_key(jwks_dictionary, token)
     except Exception as e:
         raise AuthError(e, 401)
 
-    return decoded_jwt['permissions']
+    try:
+        payload = jwt.decode(token, verification_key, algorithms=ALGORITHMS, audience=API_AUDIENCE)
+    except Exception as e:
+        raise AuthError(e, 401)
+
+    return payload
+
 
 
 '''

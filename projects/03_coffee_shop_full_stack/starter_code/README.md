@@ -34,6 +34,4 @@ The `./frontend` directory contains a complete Ionic frontend to consume the dat
 
 [View the README.md within ./frontend for more details.](./frontend/README.md)
 
-Bookmark - Completed TODOs. Make sure JWTs are still valid.
-Skipping for now: RSA key format error when I try to decode use Jose. -- Maybe try pyjwt, jwcrypto, or authlib
-Note: Auth0 trial expires Sun 11/29.
+Bookmark - Getting tests to pass. Need to extend lifetime of JWTs to max (if not already) - see reviewer's instructions on that. Reversing order of decorators on the endpoints.
