@@ -8,7 +8,8 @@ from sqlalchemy import exc
 from urllib.request import urlopen
 
 from .database.models import db_drop_and_create_all, setup_db, Drink
-from .auth.auth import AuthError, requires_auth, get_token_auth_header, verify_decode_jwt, check_permissions
+from .auth.auth import (AuthError, requires_auth, get_token_auth_header,
+                        verify_decode_jwt, check_permissions)
 
 app = Flask(__name__)
 setup_db(app)
@@ -29,6 +30,7 @@ def get_drinks():
     response = jsonify({'success': True, 'drinks': drinks})
     return response
 
+
 @app.route('/drinks-detail')
 @requires_auth('get:drinks-detail')
 def get_drinks_with_detail():
@@ -39,8 +41,8 @@ def get_drinks_with_detail():
     return response
 
 
-@requires_auth('post:drinks')
 @app.route('/drinks', methods=['POST'])
+@requires_auth('post:drinks')
 def create_drink():
     try:
         data = json.loads(request.data)
@@ -64,11 +66,11 @@ def create_drink():
     return response
 
 
-@requires_auth('patch:drinks')
 @app.route('/drinks/<int:id>', methods=['PATCH'])
+@requires_auth('patch:drinks')
 def edit_drink(id):
     try:
-        db_drink = Drink.query.get(id) # Maybe this doesn't throw an exception even if it can't find a drink with the given id
+        db_drink = Drink.query.get(id)
         db_drink.id
     except Exception:
         abort(401)
@@ -92,8 +94,8 @@ def edit_drink(id):
     return response
 
 
-@requires_auth('delete:drinks')
 @app.route('/drinks/<int:id>', methods=['DELETE'])
+@requires_auth('delete:drinks')
 def delete_drink(id):
     try:
         db_drink = Drink.query.get(id)
