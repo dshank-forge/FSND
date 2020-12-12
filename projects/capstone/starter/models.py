@@ -6,6 +6,8 @@ import json
 database_name = "magic_the_gathering"
 database_path = "postgres://{}/{}".format('localhost:5432', database_name)
 
+db = SQLAlchemy()
+
 '''
 setup_db(app)
     binds a flask application and a SQLAlchemy service
